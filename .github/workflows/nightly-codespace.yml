@@ -4,16 +4,16 @@ on:
   push:
     branches:
       - main
-#   schedule:
-#     # Runs every day at 2:00 AM UTC
-#     - cron: '0 2 * * *'
+  schedule:
+    # Runs every day at 4:00 AM pacific (UTC-7)
+    - cron: '0 12 * * *'
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Deploy to Codespace
         env:
@@ -24,6 +24,7 @@ jobs:
           REPO="angular-test"
           BRANCH="main" # or your specific branch
           API_URL="https://api.github.com/repos/$OWNER/$REPO/codespaces"
+          APP_PORT=4200
 
           # Make API call to create a Codespace
           response=$(curl -X POST $API_URL \
@@ -31,5 +32,26 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -d "{\"ref\": \"$BRANCH\"}")
 
-          echo "Response: $response"
+          echo "Codespace URL: $response.web_url"
+
+          # Wait for Codespace to be ready
+          echo "Waiting 30 seconds for Codespace to be ready..."
+          sleep 30
+
+          # Replace web_url value to get to desired port
+          # BEFORE: https://fantastic-space-carnival-54p976wp3v95v.github.dev
+          # AFTER: https://fantastic-space-carnival-54p976wp3v95v-4200.app.github.dev
+          app_url=$(echo $$response.web_url | sed 's|.github.dev|-$APP_PORT.app.github.dev|g')
+          echo "Calling Angular app at $app_url"
+          
+          # Perform your desired GET request after the app is confirmed ready
+          ngResponse = $(curl -s $app_url)
+          echo "Angular app response: $ngResponse"          
+
+          # Make API call to delete the Codespace
+            #   deleteResponse = curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
+            #     -H "Accept: application/vnd.github+json" \
+            #     $response.url
+            
+            #   echo "Delete response: $deleteResponse
 
