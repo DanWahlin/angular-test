@@ -50,10 +50,10 @@ jobs:
           app_response=$(curl -s "$app_url")
           echo "Response from app: $app_response"          
 
-          # Make API call to delete the Codespace
-          deleteResponse = $(curl -X DELETE $codespace_api_url \
-            -H "Authorization: token $GITHUB_TOKEN" \
-            -H "Accept: application/vnd.github+json")
-    
-          echo "Delete codespace: $deleteResponse
+          deleteResponse=$(curl -X DELETE $codespace_api_url \
+          -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github+json")
+        
+          echo "Delete codespace: $deleteResponse"
+        
 
