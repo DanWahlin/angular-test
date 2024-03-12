@@ -1,10 +1,8 @@
 #!/bin/bash
 
 # Define variables to use
-OWNER="danwahlin"
-REPO="angular-test"
 BRANCH="main" # or your specific branch
-API_URL="https://api.github.com/repos/$OWNER/$REPO/codespaces"
+API_URL="https://api.github.com/repos/$GITHUB_REPOSITORY/codespaces"
 APP_PORT=4200
 
 # Make API call to create a Codespace
