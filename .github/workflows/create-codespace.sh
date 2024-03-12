@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Define variables
+# Define variables to use
 OWNER="danwahlin"
 REPO="angular-test"
 BRANCH="main" # or your specific branch
