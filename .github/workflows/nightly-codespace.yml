@@ -46,8 +46,9 @@ jobs:
           app_url=$(echo $codespace_url | sed "s|.github.dev|-${APP_PORT}.app.github.dev|g")
           echo "Calling Angular app at $app_url"
           
-          # Perform your desired GET request after the app is confirmed ready
-          curl -s $app_url     
+          # Perform GET request after the app is ready
+          app_response=$(curl -s "$app_url")
+          echo "Response from app: $app_response"          
 
           # Make API call to delete the Codespace
           deleteResponse = $(curl -X DELETE $codespace_api_url \
