@@ -1,29 +1,43 @@
 #!/bin/bash
 
-# Replace these variables with your own information
-GITHUB_TOKEN="YOUR_GITHUB_TOKEN"
-OWNER="your-github-username"
-REPO="your-repo-name"
-BRANCH="main" # The branch for which you want to create the Codespace
-
-# GitHub API URL for creating a Codespace
+# Define variables
+OWNER="danwahlin"
+REPO="angular-test"
+BRANCH="main" # or your specific branch
 API_URL="https://api.github.com/repos/$OWNER/$REPO/codespaces"
+APP_PORT=4200
 
-# JSON payload specifying the branch and machine type (optional)
-# For machine types, refer to https://docs.github.com/en/codespaces/developing-in-codespaces/choosing-a-machine-type-for-your-codespace
-# This example uses the default machine type
-JSON_PAYLOAD=$(cat <<EOF
-{
-  "ref": "$BRANCH"
-  // "machine": "machine-type" // Uncomment and specify if you want a specific machine type
-}
-EOF
-)
-
-# Making the API call to create a Codespace
+# Make API call to create a Codespace
 response=$(curl -X POST $API_URL \
--H "Authorization: token $GITHUB_TOKEN" \
--H "Accept: application/vnd.github+json" \
--d "$JSON_PAYLOAD")
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json" \
+  -d "{\"ref\": \"$BRANCH\"}")
 
-echo "Response: $response"
+codespace_api_url=$(echo $response | jq -r '.url')
+codespace_url=$(echo $response | jq -r '.web_url')
+echo "Codespace URL: $codespace_url"
+
+# Replace web_url value to get to desired port
+app_url=$(echo $codespace_url | sed "s|.github.dev|-${APP_PORT}.app.github.dev|g")
+
+# Wait for Codespace to be ready
+echo "Calling app at $app_url to check if it's ready..."
+echo "Waiting 30 seconds for Codespace to be ready between attempts..."
+for i in {1..20}; do
+  appResponse=$(curl -L -s -o /dev/null -w "%{http_code}" $app_url)
+  if [ "$appResponse" == "200" ]; then
+    echo "App is ready"
+    break
+  else
+    echo "Waiting for the app to be ready... attempt $i (HTTP response: $appResponse)"
+    sleep 30
+  fi
+done       
+
+# Delete Codespace
+deleteResponse=$(curl -X DELETE $codespace_api_url \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -H "Accept: application/vnd.github+json")
+
+echo "Deleted codespace"
+
