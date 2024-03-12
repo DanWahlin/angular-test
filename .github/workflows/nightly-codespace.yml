@@ -32,7 +32,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -d "{\"ref\": \"$BRANCH\"}")
 
-          code
+          codespace_api_url=$(echo $response | jq -r '.url')
           codespace_url=$(echo $response | jq -r '.web_url')
           echo "Codespace URL: $codespace_url"
 
@@ -50,9 +50,9 @@ jobs:
           curl -s $app_url     
 
           # Make API call to delete the Codespace
-            #   deleteResponse = curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
-            #     -H "Accept: application/vnd.github+json" \
-            #     $response.url
-            
-            #   echo "Delete response: $deleteResponse
+          deleteResponse = $(curl -X DELETE $codespace_api_url \
+            -H "Authorization: token $GITHUB_TOKEN" \
+            -H "Accept: application/vnd.github+json")
+    
+          echo "Delete codespace: $deleteResponse
 
