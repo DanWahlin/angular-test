@@ -1,10 +1,8 @@
 #!/bin/bash
 
-# Define variables to use
-BRANCH="main" # or your specific branch
 API_URL="https://api.github.com/repos/$GITHUB_REPOSITORY/codespaces"
 
-echo "Codespace API URL: $API_URL"
+echo "Codespace being created for $GITHUB_REPOSITORY on branch $BRANCH"
 
 # Make API call to create a Codespace
 response=$(curl -X POST $API_URL \
