@@ -32,6 +32,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -d "{\"ref\": \"$BRANCH\"}")
 
+          code
           codespace_url=$(echo $response | jq -r '.web_url')
           echo "Codespace URL: $codespace_url"
 
@@ -42,12 +43,11 @@ jobs:
           # Replace web_url value to get to desired port
           # BEFORE: https://fantastic-space-carnival-54p976wp3v95v.github.dev
           # AFTER: https://fantastic-space-carnival-54p976wp3v95v-4200.app.github.dev
-          app_url=$(echo $codespace_url | sed 's|.github.dev|-$APP_PORT.app.github.dev|g')
+          app_url=$(echo $codespace_url | sed "s|.github.dev|-${APP_PORT}.app.github.dev|g")
           echo "Calling Angular app at $app_url"
           
           # Perform your desired GET request after the app is confirmed ready
-          ngResponse = $(curl -s $app_url)
-          echo "Angular app response: $ngResponse"          
+          curl -s $app_url     
 
           # Make API call to delete the Codespace
             #   deleteResponse = curl -X DELETE -H "Authorization: token $GITHUB_TOKEN" \
