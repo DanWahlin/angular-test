@@ -18,4 +18,4 @@ jobs:
       - name: Deploy to Codespace
         env:
           GITHUB_TOKEN: ${{ secrets.CODESPACES_TOKEN }}
-        run: ./create-codespace.sh
+        run: ./.github/workflows/create-codespace.sh
