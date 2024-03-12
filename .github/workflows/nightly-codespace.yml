@@ -32,7 +32,8 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -d "{\"ref\": \"$BRANCH\"}")
 
-          echo "Codespace URL: $response.web_url"
+          codespace_url=$(echo $response | jq -r '.web_url')
+          echo "Codespace URL: $codespace_url"
 
           # Wait for Codespace to be ready
           echo "Waiting 30 seconds for Codespace to be ready..."
@@ -41,7 +42,7 @@ jobs:
           # Replace web_url value to get to desired port
           # BEFORE: https://fantastic-space-carnival-54p976wp3v95v.github.dev
           # AFTER: https://fantastic-space-carnival-54p976wp3v95v-4200.app.github.dev
-          app_url=$(echo $$response.web_url | sed 's|.github.dev|-$APP_PORT.app.github.dev|g')
+          app_url=$(echo $codespace_url | sed 's|.github.dev|-$APP_PORT.app.github.dev|g')
           echo "Calling Angular app at $app_url"
           
           # Perform your desired GET request after the app is confirmed ready
