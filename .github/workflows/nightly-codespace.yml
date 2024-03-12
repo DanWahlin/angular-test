@@ -47,13 +47,14 @@ jobs:
           echo "Calling Angular app at $app_url"
           
           # Perform GET request after the app is ready
-          app_response=$(curl -s "$app_url")
-          echo "Response from app: $app_response"          
+          app_response=$(curl -s -f -v "$app_url" 2>&1)
+          echo "Response from app: $app_response"            
 
+          # Delete Codespace
           deleteResponse=$(curl -X DELETE $codespace_api_url \
           -H "Authorization: token $GITHUB_TOKEN" \
           -H "Accept: application/vnd.github+json")
         
-          echo "Delete codespace: $deleteResponse"
+          echo "Deleted codespace"
         
 
