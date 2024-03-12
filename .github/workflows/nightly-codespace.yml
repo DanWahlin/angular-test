@@ -18,4 +18,5 @@ jobs:
       - name: Deploy to Codespace
         env:
           GITHUB_TOKEN: ${{ secrets.CODESPACES_TOKEN }}
+          APP_PORT: 4200
         run: ./.github/workflows/create-codespace.sh

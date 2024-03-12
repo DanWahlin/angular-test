@@ -3,7 +3,8 @@
 # Define variables to use
 BRANCH="main" # or your specific branch
 API_URL="https://api.github.com/repos/$GITHUB_REPOSITORY/codespaces"
-APP_PORT=4200
+
+echo "Codespace API URL: $API_URL"
 
 # Make API call to create a Codespace
 response=$(curl -X POST $API_URL \
