@@ -36,19 +36,24 @@ jobs:
           codespace_url=$(echo $response | jq -r '.web_url')
           echo "Codespace URL: $codespace_url"
 
-          # Wait for Codespace to be ready
-          echo "Waiting 30 seconds for Codespace to be ready..."
-          sleep 30
-
           # Replace web_url value to get to desired port
           # BEFORE: https://fantastic-space-carnival-54p976wp3v95v.github.dev
           # AFTER: https://fantastic-space-carnival-54p976wp3v95v-4200.app.github.dev
           app_url=$(echo $codespace_url | sed "s|.github.dev|-${APP_PORT}.app.github.dev|g")
-          echo "Calling Angular app at $app_url"
-          
-          # Perform GET request after the app is ready
-          app_response=$(curl -s -f -v "$app_url" 2>&1)
-          echo "Response from app: $app_response"            
+
+          # Wait for Codespace to be ready
+          echo "Waiting 30 seconds for Codespace to be ready..."
+          # Simple polling mechanism
+          for i in {1..10}; do 
+            ngResponse=$(curl -s -o /dev/null -w "%{http_code}" $app_url)
+            if [ "$ngResponse" == "200" ]; then
+              echo "Angular app is ready"
+              break
+            else
+              echo "Waiting for the app to be ready... attempt $i"
+              sleep 30 # Wait for 30 seconds before trying again
+            fi
+          done       
 
           # Delete Codespace
           deleteResponse=$(curl -X DELETE $codespace_api_url \
